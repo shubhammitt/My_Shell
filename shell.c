@@ -18,19 +18,9 @@ int  getcmd(char *cmd)
 	return 1;
 
 }
-char* trim_front(char *s)
+void redirect(char *argv[])
 {
-	while(strlen(s)>0 && s[0]==' ')
-	{
-		s++;
-	}
-	return s;
-}
-char** redirect(char **parsed_cmd,int idx)
-{
-	char argv[buf_size][buf_size];
-	trim_front(parsed_cmd[idx]);
-	return argv;
+	
 }
 void execcmd(char exec_cmd[])
 {
@@ -40,15 +30,11 @@ void execcmd(char exec_cmd[])
 	while(token != NULL)
 	{
 		idx++;
-		//token=trim_front(token);
-		//strcpy(argv[idx],token);
 		argv[idx] = token;
 		token = strtok(NULL, " ");
 	}
-	// strcpy(argv[idx+1],NULL);
-
+	redirect(argv);
 	execvp(argv[0],argv);
-	printf("Error while exec\n");
 }
 void runcmd(char parsed_cmd[][buf_size],int idx)
 {
@@ -120,6 +106,7 @@ int main()
 			if(pid==0)
 			{
 				parsecmd(cmd);
+				printf("Invalid Command\n");
 			}
 			wait(NULL);
 		}
