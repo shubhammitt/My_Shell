@@ -35,14 +35,24 @@ char** redirect(char **parsed_cmd,int idx)
 void execcmd(char exec_cmd[])
 {
 	char *argv[buf_size];
-	exec_cmd=trim_front(exec_cmd);
-	printf("%s\n",exec_cmd);
-	argv[0]=exec_cmd;
+	char* token = strtok(exec_cmd, " "); 
+	int idx=-1;
+	while(token != NULL)
+	{
+		idx++;
+		//token=trim_front(token);
+		//strcpy(argv[idx],token);
+		argv[idx] = token;
+		token = strtok(NULL, " ");
+	}
+	// strcpy(argv[idx+1],NULL);
+
 	execvp(argv[0],argv);
+	printf("Error while exec\n");
 }
 void runcmd(char parsed_cmd[][buf_size],int idx)
 {
-
+	int r;
 	if(idx==-1)
 	{
 		return;
@@ -58,6 +68,7 @@ void runcmd(char parsed_cmd[][buf_size],int idx)
 	int pid=fork();
 	if(pid==0)
 	{
+
         close(fd[0]);
         close(1);
         dup(fd[1]);
@@ -66,6 +77,7 @@ void runcmd(char parsed_cmd[][buf_size],int idx)
 	}
 	else
 	{
+		wait(NULL);
 		close(fd[1]);
         close(0);
         dup(fd[0]);
@@ -104,7 +116,8 @@ int main()
 		}
 		else
 		{
-			if(fork()==0)
+			int pid=fork();
+			if(pid==0)
 			{
 				parsecmd(cmd);
 			}
