@@ -10,7 +10,7 @@
 #define buf_size 256
 int  getcmd(char *cmd)
 {
-	fprintf(stdout, "\033[1;31mMy Shell   $ \033[0m");
+	fprintf(stdout,"$ ");
 	memset(cmd,0,buf_size);
 	fgets(cmd,buf_size,stdin);
 	if(cmd[0]==0)
@@ -52,12 +52,89 @@ void redirect(char *fin_argv[],int len)
 				else
 				{
 					//>>input
+					char* token = strtok(argv[i], ">>");
+					 close(1);
+					open(token,O_WRONLY|O_APPEND|O_CREAT);
+					argv[i]="";
 				}
 
 			}
 			else
 			{
 				//>input
+				 char* token = strtok(argv[i], ">");
+				 close(1);
+				 creat(token, 0666);
+				 argv[i]="";
+			}
+		}
+		else if(n>=2 && argv[i][1]=='>')
+		{
+			if(argv[i][0]=='1')
+			{
+				if(n==2)
+				{
+					close(1);
+					creat(argv[i+1], 0666);
+
+					argv[i]="";
+					i++;
+					argv[i]="";
+				}
+				else
+				{
+					 char* token = strtok(argv[i], ">");
+					 token = strtok(NULL, " ");
+					 close(1);
+					 creat(token, 0666);
+					 argv[i]="";
+				}
+
+			}
+			else if(argv[i][1]=='2')
+			{
+				if(n==2)
+				{
+					close(2);
+					creat(argv[i+1], 0666);
+
+					argv[i]="";
+					i++;
+					argv[i]="";	
+				}
+				else
+				{
+					char* token = strtok(argv[i], ">");
+					 token = strtok(NULL, " ");
+					 close(2);
+					 creat(token, 0666);
+					 argv[i]="";
+				}
+			}
+		}
+		else if (n>=4 && strcmp(argv[i],"2>&1"))
+		{
+			close(2);
+			dup(1);
+		}
+		else if(n>=1 && argv[i][0]=='<')
+		{
+			if(n==1)
+			{
+				close(0);
+				open(argv[i+1], O_RDONLY);
+
+				argv[i]="";
+				i++;
+				argv[i]="";
+
+			}
+			else
+			{
+				char* token = strtok(argv[i], "<");
+				close(0);
+				open(token,O_RDONLY);
+				argv[i]="";
 			}
 		}
 	}
@@ -147,7 +224,9 @@ int main()
 			cmd[len-1]='\0';
 		if(len>=4 && cmd[0]=='c' && cmd[1]=='d' && cmd[2] == ' ')
 		{
-			chdir(cmd+3);
+			int x=chdir(cmd+3);
+			if(x<0)
+				printf("No such dirextory exist\n");
 		}
 		else if(len>=4 && cmd[0]=='e' && cmd[1]=='x' && cmd[2]=='i' && cmd[3]=='t')
 			exit(0);
@@ -158,6 +237,7 @@ int main()
 			{
 				parsecmd(cmd);
 				printf("Invalid Command\n");
+				exit(-1);
 			}
 			wait(NULL);
 		}
