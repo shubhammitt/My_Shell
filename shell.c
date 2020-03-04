@@ -68,6 +68,12 @@ void redirect(char *fin_argv[],int len)
 				 argv[i]="";
 			}
 		}
+		else if (n>=4 && strcmp(argv[i],"2>&1")==0)
+		{
+			close(2);
+			dup(1);
+			argv[i]="";
+		}
 		else if(n>=2 && argv[i][1]=='>')
 		{
 			if(argv[i][0]=='1')
@@ -112,11 +118,7 @@ void redirect(char *fin_argv[],int len)
 				}
 			}
 		}
-		else if (n>=4 && strcmp(argv[i],"2>&1"))
-		{
-			close(2);
-			dup(1);
-		}
+		
 		else if(n>=1 && argv[i][0]=='<')
 		{
 			if(n==1)
@@ -167,6 +169,7 @@ void runcmd(char parsed_cmd[][buf_size],int idx)
 	int r;
 	if(idx==-1)
 	{
+		exit(0);
 		return;
 	}
 	else if(idx==0)
@@ -226,7 +229,7 @@ int main()
 		{
 			int x=chdir(cmd+3);
 			if(x<0)
-				printf("No such dirextory exist\n");
+				printf("No such directory exist\n");
 		}
 		else if(len>=4 && cmd[0]=='e' && cmd[1]=='x' && cmd[2]=='i' && cmd[3]=='t')
 			exit(0);
