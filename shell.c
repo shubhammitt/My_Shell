@@ -18,9 +18,58 @@ int  getcmd(char *cmd)
 	return 1;
 
 }
-void redirect(char *argv[])
+void redirect(char *fin_argv[],int len)
 {
-	
+	char *argv[buf_size];
+	for(int i=0;i<=len;i++)
+		argv[i]=fin_argv[i];
+	for(int i=0;i<=len;i++)
+	{
+		int n=strlen(argv[i]);
+		if(n>=1 && argv[i][0]=='>')
+		{
+			if(n==1)
+			{
+				//next i is filename
+				close(1);
+				creat(argv[i+1], 0666);
+
+				argv[i]="";
+				i++;
+				argv[i]="";
+			}
+			else if(argv[i][1]=='>')
+			{
+				if(n==2)
+				{
+					close(1);
+					open(argv[i+1],O_WRONLY|O_APPEND|O_CREAT);
+
+					argv[i]="";
+					i++;
+					argv[i]="";
+				}
+				else
+				{
+					//>>input
+				}
+
+			}
+			else
+			{
+				//>input
+			}
+		}
+	}
+	for(int i=0,j=0;i<=len;i++)
+	{
+		fin_argv[i]='\0';
+		if(strcmp(argv[i],"")!=0)
+		{
+			fin_argv[j]=argv[i];
+			j++;
+		}
+	}
 }
 void execcmd(char exec_cmd[])
 {
@@ -33,7 +82,7 @@ void execcmd(char exec_cmd[])
 		argv[idx] = token;
 		token = strtok(NULL, " ");
 	}
-	redirect(argv);
+	redirect(argv,idx);
 	execvp(argv[0],argv);
 }
 void runcmd(char parsed_cmd[][buf_size],int idx)
