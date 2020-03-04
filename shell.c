@@ -100,6 +100,8 @@ int main()
 		{
 			chdir(cmd+3);
 		}
+		else if(len>=4 && cmd[0]=='e' && cmd[1]=='x' && cmd[2]=='i' && cmd[3]=='t')
+			exit(0);
 		else
 		{
 			int pid=fork();
